@@ -1,0 +1,3 @@
+Multimodal RAG System for Sustainability Documents
+
+A comprehensive multimodal Retrieval-Augmented Generation (RAG) system designed specifically for processing and analyzing sustainability documents. This system combines advanced PDF processing, Vision Language Model (VLM) integration, and domain-aware RAG pipelines to provide intelligent querying capabilities for environmental compliance, regulatory documents, and sustainability reports.

@@ -1,0 +1,20 @@
+# Code owners for the Multimodal RAG System
+
+# Global owners
+* @project-maintainer
+
+# Service layer
+app/services/ @backend-team
+
+# API layer
+app/ @api-team
+
+# Configuration and deployment
+*.yml @devops-team
+*.yaml @devops-team
+Dockerfile @devops-team
+docker-compose.yml @devops-team
+
+# Documentation
+*.md @docs-team
+.github/ @docs-team

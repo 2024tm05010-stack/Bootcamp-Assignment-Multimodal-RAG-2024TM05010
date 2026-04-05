@@ -1,0 +1,15 @@
+multimodal-rag
+sustainability
+environmental-compliance
+document-processing
+vision-language-model
+artificial-intelligence
+machine-learning
+fastapi
+docker
+pdf-processing
+retrieval-augmented-generation
+openai
+gpt-4v
+vector-database
+regulatory-compliance

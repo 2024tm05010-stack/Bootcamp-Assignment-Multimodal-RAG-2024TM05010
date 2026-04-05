@@ -212,20 +212,86 @@ GET /docs
 ## Project Structure
 
 ```
-├── app/
-│   ├── main.py              # FastAPI application
-│   ├── config.py            # Configuration settings
-│   ├── services/
-│   │   ├── pdf_processor.py # PDF processing logic
-│   │   ├── vector_store.py  # Vector indexing and search
-│   │   └── rag_pipeline.py  # RAG query processing
-│   └── __init__.py
-├── data/                    # Vector store data (created automatically)
-├── requirements.txt         # Python dependencies
-├── .env.example            # Environment configuration template
-├── README.md               # This file
-└── Solid Waste Management Rules 2026.pdf  # Sample document
+.
+├── .env                              # Environment variables (local)
+├── .env.example                      # Environment configuration template
+├── .github/                          # GitHub repository configuration
+│   ├── CODE_OF_CONDUCT.md           # Community code of conduct
+│   ├── CODEOWNERS                   # Code ownership definitions
+│   ├── CONTRIBUTING.md              # Contribution guidelines
+│   ├── FUNDING.yml                  # Sponsorship information
+│   ├── ISSUE_TEMPLATE/              # GitHub issue templates
+│   │   ├── bug_report.md           # Bug report template
+│   │   └── feature_request.md      # Feature request template
+│   ├── PULL_REQUEST_TEMPLATE.md     # Pull request template
+│   ├── README.md                    # Repository description
+│   ├── SECURITY.md                  # Security policy
+│   ├── description.txt              # Repository description for GitHub
+│   ├── topics.txt                   # Repository topics/tags
+│   └── workflows/                   # GitHub Actions workflows
+│       └── ci.yml                   # CI/CD pipeline configuration
+├── .gitignore                        # Git ignore rules
+├── .vscode/
+│   └── launch.json                   # VS Code debug configuration
+├── Dockerfile                        # Docker container definition
+├── RAG_PIPELINE_README.md           # Detailed RAG pipeline documentation
+├── README.md                        # This file
+├── Solid Waste Management Rules 2026.pdf  # Sample sustainability document
+├── api_responses.json               # API response examples
+├── app/                             # Main application package
+│   ├── __init__.py
+│   ├── api/                         # API layer
+│   │   ├── __init__.py
+│   │   └── routes.py                # FastAPI routes and endpoints
+│   ├── config.py                    # Application configuration
+│   ├── main.py                      # FastAPI application entry point
+│   ├── schemas.py                   # Pydantic models and schemas
+│   └── services/                    # Business logic services
+│       ├── __init__.py
+│       ├── embeddings.py            # Text and image embedding services
+│       ├── parser.py                # PDF document parsing and processing
+│       ├── pdf_processor.py         # Legacy PDF processing (deprecated)
+│       ├── rag_pipeline.py          # Retrieval-augmented generation pipeline
+│       ├── retriever.py             # Document retrieval with re-ranking
+│       ├── vector_store.py          # Vector database management (FAISS/ChromaDB)
+│       └── vlm_service.py           # Vision Language Model integration
+├── data/
+│   └── vector_store/                # Vector database storage (created automatically)
+├── docker-compose.yml               # Docker Compose configuration
+├── requirements.txt                 # Python dependencies
+├── test_system.py                   # System integration tests
+├── test_image_multimodal.pdf        # Test document with images
+└── [Screenshots]/                   # API documentation screenshots
+    ├── swagger_docs.png
+    ├── health_response.png
+    ├── ingest_response.png
+    ├── text_query_response.png
+    ├── table_query_response.png
+    └── image_query_response.png
 ```
+
+### Architecture Layers
+
+```
+┌─────────────────┐
+│   API Layer     │  FastAPI routes, request/response handling
+│   (app/api/)    │
+├─────────────────┤
+│ Service Layer   │  Business logic, RAG pipeline, embeddings
+│ (app/services/) │
+├─────────────────┤
+│  Data Layer     │  Vector stores, document processing
+│   (data/)       │
+└─────────────────┘
+```
+
+### Key Components
+
+- **API Layer**: RESTful endpoints for document ingestion and querying
+- **RAG Pipeline**: Advanced retrieval-augmented generation with custom prompts
+- **Multimodal Processing**: Text, table, and image extraction with VLM integration
+- **Vector Storage**: FAISS/ChromaDB for efficient similarity search
+- **Intelligent Retrieval**: Re-ranking based on content type, quality, and relevance
 
 ## Technologies Used
 
