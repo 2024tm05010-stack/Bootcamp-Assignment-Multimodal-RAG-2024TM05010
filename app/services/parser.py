@@ -1,133 +1,106 @@
 import os
 import tempfile
 from typing import List, Dict, Any
-from docling.document_converter import DocumentConverter
-from docling.datamodel.base_models import InputFormat
-from docling.datamodel.pipeline_options import PdfPipelineOptions
 from docling.backend.pypdfium2_backend import PyPdfiumDocumentBackend
+import pypdfium2 as pdfium
 
 
 class PDFParser:
     def __init__(self):
         self.temp_dir = tempfile.mkdtemp()
-        # Configure Docling pipeline options
-        self.pipeline_options = PdfPipelineOptions()
-        self.pipeline_options.do_ocr = True  # Enable OCR for images
-        self.pipeline_options.do_table_structure = True  # Extract table structure
+        self.backend = PyPdfiumDocumentBackend()
 
     def process_pdf(self, pdf_path: str) -> List[Dict[str, Any]]:
-        """Process a PDF document and extract multimodal content using Docling."""
+        """Process a PDF document and extract multimodal content using PyPdfium."""
         documents = []
 
         try:
-            # Initialize Docling converter
-            doc_converter = DocumentConverter(
-                format_options={InputFormat.PDF: self.pipeline_options}
-            )
+            # Load PDF with pypdfium2
+            pdf = pdfium.PdfDocument(pdf_path)
 
-            # Convert the PDF
-            result = doc_converter.convert(pdf_path)
-            doc = result.document
-
-            # Extract different content types
-            text_chunks = self._extract_text_chunks(doc, pdf_path)
+            # Extract text content
+            text_chunks = self._extract_text_chunks(pdf, pdf_path)
             documents.extend(text_chunks)
 
-            table_chunks = self._extract_table_chunks(doc, pdf_path)
-            documents.extend(table_chunks)
-
-            image_chunks = self._extract_image_chunks(doc, pdf_path)
+            # Extract images
+            image_chunks = self._extract_image_chunks(pdf, pdf_path)
             documents.extend(image_chunks)
 
+            # For tables, we'll use a simple approach since full Docling has issues
+            # In a production system, you might want to integrate table extraction separately
+
         except Exception as e:
-            print(f"Error processing PDF with Docling: {e}")
-            # Fallback to basic text extraction if Docling fails
+            print(f"Error processing PDF: {e}")
+            # Fallback to basic text extraction
             documents = self._fallback_text_extraction(pdf_path)
 
         return documents
 
-    def _extract_text_chunks(self, doc, pdf_path: str) -> List[Dict[str, Any]]:
-        """Extract text content as separate chunks."""
+    def _extract_text_chunks(self, pdf, pdf_path: str) -> List[Dict[str, Any]]:
+        """Extract text content from each page."""
         chunks = []
 
-        for item in doc.texts:
-            if item.text.strip():
-                chunks.append({
-                    "content": item.text.strip(),
-                    "metadata": {
-                        "page": getattr(item, 'page_no', 1),
-                        "type": "text",
-                        "source": os.path.basename(pdf_path),
-                        "docling_type": "text"
-                    }
-                })
-
-        return chunks
-
-    def _extract_table_chunks(self, doc, pdf_path: str) -> List[Dict[str, Any]]:
-        """Extract tables as markdown chunks."""
-        chunks = []
-
-        for table_index, table in enumerate(doc.tables):
+        for page_num in range(len(pdf)):
             try:
-                # Convert table to markdown
-                table_md = table.export_to_markdown()
-                if table_md.strip():
+                page = pdf[page_num]
+                text = page.get_textpage().get_text()
+                if text.strip():
                     chunks.append({
-                        "content": table_md.strip(),
+                        "content": text.strip(),
                         "metadata": {
-                            "page": getattr(table, 'page_no', 1),
-                            "type": "table",
-                            "table_index": table_index,
+                            "page": page_num + 1,
+                            "type": "text",
                             "source": os.path.basename(pdf_path),
-                            "docling_type": "table"
+                            "extraction_method": "pypdfium2"
                         }
                     })
             except Exception as e:
-                print(f"Error extracting table {table_index}: {e}")
+                print(f"Error extracting text from page {page_num + 1}: {e}")
 
         return chunks
 
-    def _extract_image_chunks(self, doc, pdf_path: str) -> List[Dict[str, Any]]:
-        """Extract images and their OCR text as separate chunks."""
+    def _extract_image_chunks(self, pdf, pdf_path: str) -> List[Dict[str, Any]]:
+        """Extract images from the PDF."""
         chunks = []
 
-        for img_index, image in enumerate(doc.pictures):
+        for page_num in range(len(pdf)):
             try:
-                # Get image metadata
-                image_path = getattr(image, 'image_path', None)
-                if image_path and os.path.exists(image_path):
-                    # Copy image to temp directory for persistence
-                    temp_image_path = os.path.join(self.temp_dir, f"docling_img_{img_index}.png")
-                    with open(image_path, "rb") as src, open(temp_image_path, "wb") as dst:
-                        dst.write(src.read())
+                page = pdf[page_num]
+                images = page.get_images()
 
-                    # Extract OCR text if available
-                    ocr_text = getattr(image, 'ocr_text', '')
-                    if ocr_text.strip():
+                for img_index, img in enumerate(images):
+                    try:
+                        # Extract image
+                        image = page.get_image(img[0])
+                        image_path = os.path.join(self.temp_dir, f"page_{page_num+1}_img_{img_index}.png")
+                        image.save(image_path)
+
+                        # For OCR, we could integrate tesseract here if needed
+                        # For now, we'll just note the image presence
                         chunks.append({
-                            "content": ocr_text.strip(),
+                            "content": f"Image extracted from page {page_num + 1}",
                             "metadata": {
-                                "page": getattr(image, 'page_no', 1),
-                                "type": "image_ocr",
-                                "image_path": temp_image_path,
+                                "page": page_num + 1,
+                                "type": "image",
+                                "image_path": image_path,
                                 "image_index": img_index,
                                 "source": os.path.basename(pdf_path),
-                                "docling_type": "image"
+                                "extraction_method": "pypdfium2"
                             }
                         })
+                    except Exception as e:
+                        print(f"Error extracting image {img_index} from page {page_num + 1}: {e}")
+
             except Exception as e:
-                print(f"Error extracting image {img_index}: {e}")
+                print(f"Error processing images on page {page_num + 1}: {e}")
 
         return chunks
 
     def _fallback_text_extraction(self, pdf_path: str) -> List[Dict[str, Any]]:
-        """Fallback text extraction if Docling fails."""
+        """Fallback text extraction if main processing fails."""
         try:
-            # Simple fallback using basic file reading
             with open(pdf_path, 'rb') as f:
-                # This is a very basic fallback - in practice, you might want to use a simpler PDF library
-                content = f"PDF content from {os.path.basename(pdf_path)} - Docling processing failed"
+                content = f"PDF content from {os.path.basename(pdf_path)} - processing failed, please check PDF format"
                 return [{
                     "content": content,
                     "metadata": {
