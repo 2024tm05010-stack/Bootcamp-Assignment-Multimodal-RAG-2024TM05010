@@ -189,6 +189,26 @@ GET /docs
         }'
    ```
 
+## Screenshots
+
+### API Documentation
+![Swagger UI Documentation](swagger_docs.png)
+
+### Health Check Response
+![Health Check API Response](health_response.png)
+
+### Document Ingestion
+![Document Ingestion Response](ingest_response.png)
+
+### Text Query Response
+![Text Query API Response](text_query_response.png)
+
+### Table Query Response
+![Table Query API Response](table_query_response.png)
+
+### Image Query Response
+![Image Query API Response](image_query_response.png)
+
 ## Project Structure
 
 ```
