@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  multimodal-rag:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - VECTOR_STORE_TYPE=faiss
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./data:/app/data
+      - ./Solid Waste Management Rules 2026.pdf:/app/sample.pdf
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
