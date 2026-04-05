@@ -28,7 +28,4 @@ class Settings:
     DATA_DIR: str = os.getenv("DATA_DIR", "./data")
     VECTOR_STORE_PATH: str = os.path.join(DATA_DIR, "vector_store")
 
-    # OCR Settings
-    TESSERACT_CONFIG: str = os.getenv("TESSERACT_CONFIG", '--oem 3 --psm 6')
-
 settings = Settings()
