@@ -78,7 +78,7 @@ def test_query():
                 print(f"  Answer preview: {result['answer'][:100]}...")
                 print(f"  Sources found: {len(result['sources'])}")
                 print(f"  Confidence: {result.get('confidence', 'N/A'):.3f}")
-                print(f"  Processing time: {result.get('processing_time', 'N/A'):.2f}s")
+                print(f"  Processing time: {float(result.get('processing_time', 0)):.2f}s")
             else:
                 print(f"✗ Query '{query}' ({query_type}) failed: {response.status_code}")
                 return False
