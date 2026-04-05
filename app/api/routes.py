@@ -91,7 +91,7 @@ async def query_documents(request: QueryRequest):
         raise HTTPException(status_code=404, detail="No documents have been ingested yet")
 
     try:
-        result = rag_pipeline.query(request.query, request.top_k)
+        result = rag_pipeline.query(request.query, request.top_k, request.query_type)
         if not result["sources"]:
             raise HTTPException(status_code=404, detail="No relevant information found for the query")
         return QueryResponse(**result)

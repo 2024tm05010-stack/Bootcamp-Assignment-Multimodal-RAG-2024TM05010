@@ -50,26 +50,37 @@ def test_document_ingestion():
         return False
 
 def test_query():
-    """Test querying the system"""
+    """Test querying the system with different query types"""
     print("Testing query functionality...")
-    test_queries = [
-        "What is solid waste?",
-        "What are the rules for waste management?",
-        "What are the penalties for improper disposal?"
+
+    test_cases = [
+        {"query": "What is solid waste?", "type": "general"},
+        {"query": "What are the rules for waste management?", "type": "factual"},
+        {"query": "What are the penalties for improper disposal?", "type": "analytical"},
+        {"query": "Summarize the key waste management regulations", "type": "summarization"}
     ]
 
-    for query in test_queries:
+    for test_case in test_cases:
+        query = test_case["query"]
+        query_type = test_case["type"]
+
         try:
-            payload = {"query": query, "top_k": 3}
+            payload = {
+                "query": query,
+                "top_k": 3,
+                "query_type": query_type
+            }
             response = requests.post("http://localhost:8000/query", json=payload)
 
             if response.status_code == 200:
                 result = response.json()
-                print(f"✓ Query '{query}' successful")
+                print(f"✓ Query '{query}' ({query_type}) successful")
                 print(f"  Answer preview: {result['answer'][:100]}...")
                 print(f"  Sources found: {len(result['sources'])}")
+                print(f"  Confidence: {result.get('confidence', 'N/A'):.3f}")
+                print(f"  Processing time: {result.get('processing_time', 'N/A'):.2f}s")
             else:
-                print(f"✗ Query '{query}' failed: {response.status_code}")
+                print(f"✗ Query '{query}' ({query_type}) failed: {response.status_code}")
                 return False
 
         except Exception as e:

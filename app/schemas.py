@@ -25,12 +25,16 @@ class SourceItem(BaseModel):
 class QueryRequest(BaseModel):
     query: str
     top_k: int = 5
+    query_type: str = "general"  # general, factual, analytical, comparative, summarization
 
 
 class QueryResponse(BaseModel):
     answer: str
     sources: List[SourceItem]
     confidence: float
+    query_type: str
+    processing_time: float
+    chunks_retrieved: int
 
 
 class DocumentPreview(BaseModel):

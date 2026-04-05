@@ -1,15 +1,14 @@
 import os
 import tempfile
 from typing import List, Dict, Any, Optional
-from docling.backend.pypdfium2_backend import PyPdfiumDocumentBackend
 import pypdfium2 as pdfium
+import fitz  # PyMuPDF for image extraction
 from .vlm_service import VLMService
 
 
 class PDFParser:
     def __init__(self, vlm_service: Optional[VLMService] = None):
         self.temp_dir = tempfile.mkdtemp()
-        self.backend = PyPdfiumDocumentBackend()
         self.vlm_service = vlm_service or VLMService()
 
     def process_pdf(self, pdf_path: str) -> List[Dict[str, Any]]:
@@ -65,17 +64,22 @@ class PDFParser:
         """Extract images from the PDF and generate VLM summaries."""
         chunks = []
 
-        for page_num in range(len(pdf)):
-            try:
-                page = pdf[page_num]
-                images = page.get_images()
+        # Use fitz for image extraction since pypdfium2 API has changed
+        with fitz.open(pdf_path) as doc:
+            for page_num in range(len(doc)):
+                page = doc[page_num]
+                image_list = page.get_images(full=True)
 
-                for img_index, img in enumerate(images):
+                for img_index, img in enumerate(image_list):
                     try:
-                        # Extract image
-                        image = page.get_image(img[0])
-                        image_path = os.path.join(self.temp_dir, f"page_{page_num+1}_img_{img_index}.png")
-                        image.save(image_path)
+                        xref = img[0]
+                        base_image = doc.extract_image(xref)
+                        image_bytes = base_image["image"]
+                        image_ext = base_image["ext"]
+
+                        image_path = os.path.join(self.temp_dir, f"page_{page_num+1}_img_{img_index}.{image_ext}")
+                        with open(image_path, "wb") as img_file:
+                            img_file.write(image_bytes)
 
                         # Generate VLM summary
                         context = f"page {page_num + 1} of document '{os.path.basename(pdf_path)}'"
@@ -92,15 +96,12 @@ class PDFParser:
                                 "image_path": image_path,
                                 "image_index": img_index,
                                 "source": os.path.basename(pdf_path),
-                                "extraction_method": "pypdfium2_vlm",
+                                "extraction_method": "fitz_vlm",
                                 "vlm_model": "gpt-4o-mini" if self.vlm_service.is_available() else "none"
                             }
                         })
                     except Exception as e:
                         print(f"Error extracting image {img_index} from page {page_num + 1}: {e}")
-
-            except Exception as e:
-                print(f"Error processing images on page {page_num + 1}: {e}")
 
         return chunks
 
