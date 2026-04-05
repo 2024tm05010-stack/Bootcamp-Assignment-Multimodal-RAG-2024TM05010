@@ -14,10 +14,12 @@ from ..services.embeddings import EmbeddingService
 from ..services.vector_store import VectorStore
 from ..services.retriever import Retriever
 from ..services.rag_pipeline import RAGPipeline
+from ..services.vlm_service import VLMService
 
 router = APIRouter()
 
-pdf_parser = PDFParser()
+vlm_service = VLMService()
+pdf_parser = PDFParser(vlm_service)
 embedding_service = EmbeddingService()
 vector_store = VectorStore(embedding_service)
 retriever = Retriever(vector_store)

@@ -44,7 +44,7 @@ class VectorStore:
                 vector = self.embedding_service.text_embedding(content)
                 self._add_text_vector(vector, content, metadata)
 
-            elif metadata["type"] in ["image_ocr", "table"]:
+            elif metadata["type"] in ["image_ocr", "table", "image_description"]:
                 vector = self.embedding_service.text_embedding(content)
                 self._add_text_vector(vector, content, metadata)
 

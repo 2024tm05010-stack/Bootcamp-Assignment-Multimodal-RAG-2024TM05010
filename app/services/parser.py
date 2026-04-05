@@ -1,14 +1,16 @@
 import os
 import tempfile
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from docling.backend.pypdfium2_backend import PyPdfiumDocumentBackend
 import pypdfium2 as pdfium
+from .vlm_service import VLMService
 
 
 class PDFParser:
-    def __init__(self):
+    def __init__(self, vlm_service: Optional[VLMService] = None):
         self.temp_dir = tempfile.mkdtemp()
         self.backend = PyPdfiumDocumentBackend()
+        self.vlm_service = vlm_service or VLMService()
 
     def process_pdf(self, pdf_path: str) -> List[Dict[str, Any]]:
         """Process a PDF document and extract multimodal content using PyPdfium."""
@@ -22,7 +24,7 @@ class PDFParser:
             text_chunks = self._extract_text_chunks(pdf, pdf_path)
             documents.extend(text_chunks)
 
-            # Extract images
+            # Extract images with VLM summaries
             image_chunks = self._extract_image_chunks(pdf, pdf_path)
             documents.extend(image_chunks)
 
@@ -60,7 +62,7 @@ class PDFParser:
         return chunks
 
     def _extract_image_chunks(self, pdf, pdf_path: str) -> List[Dict[str, Any]]:
-        """Extract images from the PDF."""
+        """Extract images from the PDF and generate VLM summaries."""
         chunks = []
 
         for page_num in range(len(pdf)):
@@ -75,17 +77,23 @@ class PDFParser:
                         image_path = os.path.join(self.temp_dir, f"page_{page_num+1}_img_{img_index}.png")
                         image.save(image_path)
 
-                        # For OCR, we could integrate tesseract here if needed
-                        # For now, we'll just note the image presence
+                        # Generate VLM summary
+                        context = f"page {page_num + 1} of document '{os.path.basename(pdf_path)}'"
+                        if self.vlm_service.is_available():
+                            vlm_summary = self.vlm_service.generate_image_summary(image_path, context)
+                        else:
+                            vlm_summary = f"Image extracted from page {page_num + 1} (VLM service not available)"
+
                         chunks.append({
-                            "content": f"Image extracted from page {page_num + 1}",
+                            "content": vlm_summary,
                             "metadata": {
                                 "page": page_num + 1,
-                                "type": "image",
+                                "type": "image_description",
                                 "image_path": image_path,
                                 "image_index": img_index,
                                 "source": os.path.basename(pdf_path),
-                                "extraction_method": "pypdfium2"
+                                "extraction_method": "pypdfium2_vlm",
+                                "vlm_model": "gpt-4o-mini" if self.vlm_service.is_available() else "none"
                             }
                         })
                     except Exception as e:
