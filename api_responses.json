@@ -1,0 +1,92 @@
+{
+  "ingest": {
+    "message": "Successfully ingested test_image_multimodal.pdf",
+    "chunks_processed": 1
+  },
+  "health": {
+    "status": "healthy",
+    "service": "multimodal-rag",
+    "indexed_documents": 355
+  },
+  "text_query": {
+    "answer": "Based on the retrieved document chunks, here is the relevant information:\n[Document 1] Type: table, Page: 97, Source: Solid Waste Management Rules 2026.pdf\n| provide technical guidelines and project finance to the States or Union territories for rural local |\n| --- |\n| bodies on solid waste management to facilitate meeting timelines and standards of these rules; |",
+    "sources": [
+      {
+        "content": "| provide technical guidelines and project finance to the States or Union territories for rural local |\n| --- |\n| bodies on solid waste management to facilitate meeting timelines and standards of these rules; |",
+        "page": 97,
+        "type": "table",
+        "source": "Solid Waste Management Rules 2026.pdf",
+        "score": 0.7604185342788696
+      },
+      {
+        "content": "|  | All local bodies are responsible for undertaking solid waste |\n| --- | --- |\n| management as provided under these rules in order to protect and improve quality of environment in the area |  |\n| under their jurisdiction. |  |",
+        "page": 103,
+        "type": "table",
+        "source": "Solid Waste Management Rules 2026.pdf",
+        "score": 0.7572901248931885
+      },
+      {
+        "content": "| requirement for solid waste management infrastructure including for collection, transportation, |\n| --- |\n| segregation, storage, as required before processing and recycling (including both wet and dry waste) |\n| and environmentally sound disposal of waste. |",
+        "page": 109,
+        "type": "table",
+        "source": "Solid Waste Management Rules 2026.pdf",
+        "score": 0.7491042613983154
+      }
+    ],
+    "confidence": 0.7556043068567911
+  },
+  "table_query": {
+    "answer": "Based on the retrieved document chunks, here is the relevant information:\n[Document 1] Type: table, Page: 89, Source: Solid Waste Management Rules 2026.pdf\n| S. No. | Combustible\nFraction of\nsolid waste | Calorific value | Intended use | Specified\ndistance | Fuel Substitution",
+    "sources": [
+      {
+        "content": "| S. No. | Combustible\nFraction of\nsolid waste | Calorific value | Intended use | Specified\ndistance | Fuel Substitution\nSchedule |\n| --- | --- | --- | --- | --- | --- |\n| (1) | (2) | (3) | (4) | (5) | (6) |\n| 1 | Segregated\nCombustible\nFraction or\nagri-residue | > 1500 Kcal / kg\nnet | Waste to ener...",
+        "page": 89,
+        "type": "table",
+        "source": "Solid Waste Management Rules 2026.pdf",
+        "score": 0.44656309485435486
+      },
+      {
+        "content": "90  \nTHE GAZETTE OF INDIA : EXTRAORDINARY \n   [PART II\u2014SEC. 3(ii)] \nFuel   or Segregated Combustible Fraction  as per guidelines issued by Ministry of Housing and Urban Affairs, on \nthe centralised online portal on a monthly basis. \n \n(4) \nRefuse-Derived Fuel plants to report real time on the availa...",
+        "page": 90,
+        "type": "text",
+        "source": "Solid Waste Management Rules 2026.pdf",
+        "score": 0.43937739729881287
+      },
+      {
+        "content": "| C/N ratio | <20 | Less than 20:1 |\n| --- | --- | --- |\n| pH | 6.5-7.5 | (1:5 solution) maximum 6.7 |\n| Moisture, percent by weight,\nmaximum | 15.0-25.0 | 25.0 |\n| Bulk density (g/cm3) | <1.0 | Less than 1.6 |\n| Total Organic Carbon, per cent by\nweight, minimum | 12.0 | 7.9 |\n| Total Nitrogen (as N...",
+        "page": 119,
+        "type": "table",
+        "source": "Solid Waste Management Rules 2026.pdf",
+        "score": 0.3017146587371826
+      }
+    ],
+    "confidence": 0.39588505029678345
+  },
+  "image_query": {
+    "answer": "Based on the retrieved document chunks, here is the relevant information:\n[Document 1] Type: image_ocr, Page: 1, Source: test_image_multimodal.pdf\nImage summary text Recycle plasticand glass responsibly.\nThis san COR target for image-based retrieval\n\n[Document 2] Type: image_ocr, Page: 1, Source: test_image_multimodal.pdf",
+    "sources": [
+      {
+        "content": "Image summary text Recycle plasticand glass responsibly.\nThis san COR target for image-based retrieval",
+        "page": 1,
+        "type": "image_ocr",
+        "source": "test_image_multimodal.pdf",
+        "score": 0.572218656539917
+      },
+      {
+        "content": "Image summary text Recycle plasticand glass responsibly.\nThis san COR target for image-based retrieval",
+        "page": 1,
+        "type": "image_ocr",
+        "source": "test_image_multimodal.pdf",
+        "score": 0.572218656539917
+      },
+      {
+        "content": "Image summary text Recycle plasticand glass responsibly.\nThis san COR target for image-based retrieval",
+        "page": 1,
+        "type": "image_ocr",
+        "source": "test_image_multimodal.pdf",
+        "score": 0.572218656539917
+      }
+    ],
+    "confidence": 0.572218656539917
+  }
+}
